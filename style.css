@@ -1,0 +1,172 @@
+/* Paleta de Colores Nueva: Naranja Neón y Oscuro */
+:root {
+    --color-fondo: #121212; /* Negro profundo para fondo */
+    --color-principal: #292929; /* Gris oscuro para la caja del form */
+    --color-acento: #FF4500; /* Naranja Brillante (Neón) */
+    --color-caja: var(--color-principal); 
+    --color-texto: #E0E0E0; /* Texto claro */
+    --color-borrar: #DC3545; /* Rojo para borrar */
+}
+
+/* Estilos Generales */
+body {
+    font-family: 'Consolas', monospace; /* Fuente estilo código para look moderno */
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.contenedor-principal {
+    width: 90%;
+    max-width: 650px; /* Un poco más ancho */
+    margin: 30px auto;
+    box-shadow: 0 0 25px rgba(255, 69, 0, 0.4); /* Sombra de neón */
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--color-caja);
+    border: 1px solid var(--color-acento); /* Borde Naranja Neón */
+}
+
+/* Cabecera */
+.cabecera {
+    background-color: var(--color-acento); /* Naranja Neón */
+    color: var(--color-fondo); /* Texto negro sobre naranja neón */
+    padding: 20px;
+    text-align: center;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+}
+
+.cabecera h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+/* Formulario */
+main {
+    padding: 30px;
+}
+
+.formulario-registro h2 {
+    text-align: center;
+    color: var(--color-acento); /* Naranja Neón */
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--color-acento);
+    padding-bottom: 10px;
+    text-shadow: 0 0 10px rgba(255, 69, 0, 0.5); /* Efecto neón en título */
+}
+
+.campo {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--color-acento); /* Naranja Neón */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #555555; /* Borde oscuro */
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #333333; /* Fondo oscuro de los inputs */
+    color: var(--color-texto);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--color-acento); /* Borde Naranja Neón */
+    outline: none;
+    box-shadow: 0 0 8px var(--color-acento); /* Sombra de neón al enfocar */
+}
+
+textarea {
+    resize: vertical;
+}
+
+#contador {
+    display: block;
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--color-acento);
+    margin-top: 5px;
+}
+
+.campo-checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.campo-checkbox label {
+    font-weight: normal;
+    margin-left: 10px;
+    color: var(--color-texto);
+}
+
+/* Botones */
+.botones {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.botones button {
+    flex-grow: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    text-transform: uppercase;
+}
+
+#btnEnviar {
+    background-color: var(--color-acento); /* Naranja Neón */
+    color: var(--color-fondo); /* Texto oscuro sobre neón */
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.7); /* Sombra neón */
+}
+
+#btnEnviar:hover {
+    background-color: #CC3700; /* Naranja más oscuro al pasar el ratón */
+    box-shadow: 0 0 15px var(--color-acento);
+    transform: scale(1.02);
+}
+
+#btnBorrar {
+    background-color: var(--color-borrar); /* Rojo */
+    color: white;
+}
+
+#btnBorrar:hover {
+    background-color: #C82333;
+    transform: scale(1.02);
+}
+
+/* Pie de página */
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    background-color: var(--color-fondo); 
+    color: var(--color-texto);
+    margin-top: auto;
+    font-size: 0.85rem;
+    border-top: 1px solid var(--color-acento);
+}

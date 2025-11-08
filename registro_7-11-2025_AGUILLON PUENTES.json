@@ -1,0 +1,12 @@
+{
+  "nombre": "MARIO DAVIS ",
+  "apellido": "AGUILLON PUENTES",
+  "email": "aguillondavis@gmail.com",
+  "edad": 44,
+  "nacimiento": "1981-02-14",
+  "genero": "Masculino",
+  "pais": "Colombia",
+  "descripcion": "Estudiante del SENA en ADSO. Enfocado en la lógica de programación, el desarrollo full-stack y la calidad del software.",
+  "terminos": true,
+  "fechaRegistro": "2025-11-08T01:20:32.998Z"
+}
