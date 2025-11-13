@@ -1,94 +1,167 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Captura de elementos
+
+    // ===== 1. DECLARACIÓN DE VARIABLES Y ELEMENTOS DEL DOM =====
     const form = document.getElementById('formulario');
     const descripcionTextArea = document.getElementById('descripcion');
     const contadorElement = document.getElementById('contador');
     const btnEnviar = document.getElementById('btnEnviar');
     const btnBorrar = document.getElementById('btnBorrar');
-
-    // Colores basados en la paleta Naranja Neón y Oscuro
-    // Usamos el color del borde normal (#555555) y el color de error (#FF4500)
-    const colorBordeNormal = '#555555'; // Borde oscuro de los inputs en el CSS
-    const colorError = '#FF4500';      // Naranja Neón (para el borde de error)
     
-    // Inicializar y actualizar contador de caracteres
+    // Variables de la Barra de Progreso
+    const barra = document.getElementById("barra"); 
+    
+    // LISTA ORIGINAL COMPLETA DE CAMPOS (usada para validación final)
+    const campos = [ 
+        "nombre", "apellido", "email", "edad", "nacimiento", "genero", 
+        "pais", "descripcion", "terminos",
+    ];
+
+    // ¡NUEVA LISTA PARA EL PROGRESO! EXCLUYE 'terminos'
+    const camposSoloProgreso = [ 
+        "nombre", "apellido", "email", "edad", "nacimiento", "genero", 
+        "pais", "descripcion",
+    ];
+    
+    // Variables de Estilo
+    const colorBordeNormal = '#555555'; 
+    const colorError = '#FF4500'; 
+    
+    // Variable para el Contador de Caracteres
     const maxLen = descripcionTextArea ? descripcionTextArea.maxLength : 150;
+
+
+// --------------------------------------------------------------------------
+// --- FUNCIÓN DE ACTUALIZACIÓN DE PROGRESO (CORREGIDA) ---
+// --------------------------------------------------------------------------
+
+    function actualizarProgreso() {
+        let completados = 0;
+        // El total es ahora la longitud del array SIN el checkbox
+        const total = camposSoloProgreso.length; 
+
+        camposSoloProgreso.forEach((id) => {
+            const campo = document.getElementById(id);
+            if (!campo) return; 
+
+            // Esta iteración solo revisa campos de texto, números, fechas y selects.
+            if (campo.value && campo.value.trim() !== "") {
+                completados++;
+            }
+        });
+
+        // Calculamos el porcentaje solo con los campos que deben mover la barra
+        const porcentaje = Math.round((completados / total) * 100);
+        
+        // Actualiza el ancho del div 'barra'
+        if (barra) {
+            barra.style.width = porcentaje + "%";
+        }
+    }
+
+
+// --------------------------------------------------------------------------
+// ===== 2. CONFIGURACIÓN DE EVENT LISTENERS =====
+// --------------------------------------------------------------------------
+
+    // a. Inicializar y actualizar contador de caracteres y progreso
     if (descripcionTextArea && contadorElement) {
         contadorElement.textContent = `0/${maxLen} caracteres`;
         descripcionTextArea.addEventListener('input', () => {
             contadorElement.textContent = `${descripcionTextArea.value.length}/${maxLen} caracteres`;
             
-            // Opcional: Cambia el color si se acerca al límite (manteniendo el estilo neón)
+            // Lógica de color del contador
             if (descripcionTextArea.value.length >= maxLen * 0.9) {
-                contadorElement.style.color = '#DC3545'; // Rojo estándar para advertencia
+                contadorElement.style.color = '#DC3545'; 
             } else {
-                contadorElement.style.color = colorError; // Naranja Neón
+                contadorElement.style.color = colorError; 
             }
+            // ¡Actualiza la barra!
+            actualizarProgreso();
         });
     }
 
-    // 2. Evento principal: Validar y descargar JSON
+    // b. Conectar solo los campos de 'camposSoloProgreso' a la función de progreso
+    camposSoloProgreso.forEach(id => {
+        const campo = document.getElementById(id);
+        if (campo) {
+            // 'input' para texto, 'change' para selects/checkboxes
+            campo.addEventListener('input', actualizarProgreso);
+            campo.addEventListener('change', actualizarProgreso);
+        }
+    });
+
+    // c. Evento principal: Validar y descargar JSON
     btnEnviar.addEventListener('click', validarYDescargar);
 
-    // 3. Limpiar formulario y errores al borrar
+    // d. Limpiar formulario y errores al borrar
     btnBorrar.addEventListener('click', () => {
         form.reset();
         document.querySelectorAll('.error').forEach(e => e.textContent = "");
         if (contadorElement) {
             contadorElement.textContent = `0/${maxLen} caracteres`;
-            contadorElement.style.color = colorError; // Asegurar el color neón inicial
+            contadorElement.style.color = colorError; 
         }
-        // Restaurar bordes de inputs al color oscuro normal
         document.querySelectorAll('input, select, textarea').forEach(input => {
-             input.style.border = `1px solid ${colorBordeNormal}`; // ¡Ajuste aquí!
+            input.style.border = `1px solid ${colorBordeNormal}`; 
         });
+        
+        // Resetear el progreso de la barra
+        if (barra) {
+            barra.style.width = "0%";
+        }
     });
 
+    // Llama a la función al cargar la página para inicializar la barra.
+    actualizarProgreso(); 
 
-    // --- FUNCIÓN PRINCIPAL DE VALIDACIÓN Y DESCARGA ---
+
+// --------------------------------------------------------------------------
+// --- FUNCIÓN PRINCIPAL DE VALIDACIÓN Y DESCARGA (SIN CAMBIOS) ---
+// --------------------------------------------------------------------------
+
+    // Helper para crear/obtener el elemento de error
+    const getErrorElement = (idCampo) => {
+        let errorElement = document.getElementById(`error-${idCampo}`);
+        if (!errorElement) {
+            errorElement = document.createElement('p');
+            errorElement.className = 'error';
+            errorElement.id = `error-${idCampo}`;
+            errorElement.style.color = colorError; 
+            errorElement.style.fontSize = '0.9rem'; 
+            
+            const inputElement = document.getElementById(idCampo);
+            if (inputElement) {
+                inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling); 
+            } else if (idCampo === 'terminos') {
+                document.querySelector('.campo-checkbox')?.appendChild(errorElement);
+            }
+        }
+        return errorElement;
+    };
+
+
     function validarYDescargar() {
         let valido = true;
         
-        // Función para simplificar la obtención del elemento de error
-        const getErrorElement = (idCampo) => {
-            let errorElement = document.getElementById(`error-${idCampo}`);
-            if (!errorElement) {
-                errorElement = document.createElement('p');
-                errorElement.className = 'error';
-                errorElement.id = `error-${idCampo}`;
-                errorElement.style.color = colorError; // Aplicar color Naranja Neón al texto de error
-                errorElement.style.fontSize = '0.9rem'; // Estilo más legible
-                
-                const inputElement = document.getElementById(idCampo);
-                if (inputElement) {
-                    // Insertar después del input, dentro del div.campo
-                    inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling); 
-                } else if (idCampo === 'terminos') {
-                    document.querySelector('.campo-checkbox').appendChild(errorElement);
-                }
-            }
-            return errorElement;
-        };
-
         // 1. Limpiamos errores previos y restauramos bordes
         document.querySelectorAll('.error').forEach(e => e.textContent = "");
         document.querySelectorAll('input, select, textarea').forEach(input => {
-             input.style.border = `1px solid ${colorBordeNormal}`; // ¡Ajuste aquí!
+            input.style.border = `1px solid ${colorBordeNormal}`; 
         });
 
-        // 2. Validaciones (El resto de las validaciones lógicas es correcto)
+        // 2. Validaciones (Múltiples validaciones)
         
         // Nombre
         const nombreInput = document.getElementById('nombre');
-        if (nombreInput.value.trim() === "") {
+        if (nombreInput?.value.trim() === "") {
             getErrorElement('nombre').textContent = "El nombre es obligatorio.";
-            nombreInput.style.border = `2px solid ${colorError}`; // Naranja Neón para error
+            nombreInput.style.border = `2px solid ${colorError}`; 
             valido = false;
         }
 
         // Apellido
         const apellidoInput = document.getElementById('apellido');
-        if (apellidoInput.value.trim() === "") {
+        if (apellidoInput?.value.trim() === "") {
             getErrorElement('apellido').textContent = "El apellido es obligatorio.";
             apellidoInput.style.border = `2px solid ${colorError}`;
             valido = false;
@@ -96,8 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Email
         const emailInput = document.getElementById('email');
-        const emailVal = emailInput.value.trim();
-        if (emailVal === "" || !emailVal.includes("@") || emailVal.length < 5) {
+        const emailVal = emailInput?.value.trim();
+        if (!emailVal || !emailVal.includes("@") || emailVal.length < 5) {
             getErrorElement('email').textContent = "Ingrese un correo válido.";
             emailInput.style.border = `2px solid ${colorError}`;
             valido = false;
@@ -105,8 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Edad
         const edadInput = document.getElementById('edad');
-        const edadVal = parseInt(edadInput.value);
-        if (edadInput.value === "" || edadVal < 1 || edadVal > 120) {
+        const edadVal = parseInt(edadInput?.value);
+        if (!edadInput?.value || edadVal < 1 || edadVal > 120) {
             getErrorElement('edad').textContent = "Ingrese una edad válida (1 a 120).";
             edadInput.style.border = `2px solid ${colorError}`;
             valido = false;
@@ -114,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fecha de Nacimiento
         const nacimientoInput = document.getElementById('nacimiento');
-        if (nacimientoInput.value === "") {
+        if (nacimientoInput?.value === "") {
             getErrorElement('nacimiento').textContent = "Seleccione una fecha.";
             nacimientoInput.style.border = `2px solid ${colorError}`;
             valido = false;
@@ -122,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Género
         const generoInput = document.getElementById('genero');
-        if (generoInput.value === "") {
+        if (generoInput?.value === "") {
             getErrorElement('genero').textContent = "Seleccione un género.";
             generoInput.style.border = `2px solid ${colorError}`;
             valido = false;
@@ -130,23 +203,23 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // País
         const paisInput = document.getElementById('pais');
-        if (paisInput.value.trim() === "") {
+        if (paisInput?.value.trim() === "") {
             getErrorElement('pais').textContent = "Ingrese un país.";
             paisInput.style.border = `2px solid ${colorError}`;
             valido = false;
         }
 
-        // Descripción (Se requiere para generar el JSON)
+        // Descripción
         const descripcionInput = document.getElementById('descripcion');
-        if (descripcionInput.value.trim() === "") {
+        if (descripcionInput?.value.trim() === "") {
             getErrorElement('descripcion').textContent = "Ingrese una descripción.";
             descripcionInput.style.border = `2px solid ${colorError}`;
             valido = false;
         }
 
-        // Términos
+        // Términos (Este campo sigue siendo OBLIGATORIO para el envío, pero no para la barra)
         const terminosInput = document.getElementById('terminos');
-        if (!terminosInput.checked) {
+        if (!terminosInput?.checked) {
             getErrorElement('terminos').textContent = "Debe aceptar los términos y condiciones.";
             valido = false;
         }
@@ -164,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pais: paisInput.value,
                 descripcion: descripcionInput.value,
                 terminos: terminosInput.checked,
-                fechaRegistro: new Date().toISOString() // Agregamos una marca de tiempo
+                fechaRegistro: new Date().toISOString() 
             };
 
             const blob = new Blob([JSON.stringify(datos, null, 2)], {
@@ -173,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            // Personaliza el nombre del archivo con un sello de tiempo para evitar que se sobrescriba
             const fecha = new Date().toLocaleDateString('es-CO').replace(/\//g, '-');
             a.download = `registro_${fecha}_${datos.apellido}.json`;
             

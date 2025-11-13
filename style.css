@@ -97,6 +97,22 @@ textarea {
     resize: vertical;
 }
 
+/* ===== BARRA DE PROGRESO ===== */
+.progreso {
+    margin-top: 15px;
+    height: 15px;
+    background-color: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.barra {
+    height: 100%;
+    width: 0%;
+    background-color: #6C63FF;
+    transition: width 0.3s;
+}
+
 #contador {
     display: block;
     text-align: right;
