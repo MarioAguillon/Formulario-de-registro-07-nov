@@ -5,7 +5,7 @@
     --color-acento: #FF4500; /* Naranja Brillante (Neón) */
     --color-caja: var(--color-principal); 
     --color-texto: #E0E0E0; /* Texto claro */
-    --color-borrar: #DC3545; /* Rojo para borrar */
+    --color-borrar: #FF4500; /* Rojo para borrar */
 }
 
 /* Estilos Generales */
@@ -109,7 +109,7 @@ textarea {
 .barra {
     height: 100%;
     width: 0%;
-    background-color: #6C63FF;
+    background-color: #FF4500;
     transition: width 0.3s;
 }
 
@@ -167,7 +167,7 @@ textarea {
 
 #btnBorrar {
     background-color: var(--color-borrar); /* Rojo */
-    color: white;
+    color: rgb(12, 9, 9);
 }
 
 #btnBorrar:hover {
